@@ -1,0 +1,11 @@
+[package]
+name = "lootbox_nft"
+version = "0.0.1"
+edition = "2024.beta"
+published-at = "0xfdc209ed0a889cee076867e02daec48de5e2c6bba139e36d829ec0e88b1eb621"
+
+[dependencies]
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/testnet" }
+
+[addresses]
+lootbox_nft = "0x0"
