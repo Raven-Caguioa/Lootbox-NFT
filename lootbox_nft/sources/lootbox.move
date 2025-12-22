@@ -5,7 +5,7 @@ module lootbox_nft::lootbox {
     use sui::sui::SUI;
     use sui::transfer;
     use sui::random::{Self, Random};
-    use std::string::{Self, String};
+    use std::string::{String};
     use lootbox_nft::nft::{Self, LootboxNFT};
     use lootbox_nft::pool::{Self, TreasuryPool};
 
@@ -535,9 +535,8 @@ module lootbox_nft::lootbox {
     }
 
     // ==================== VIEW FUNCTIONS ====================
-    // KEEP ORIGINAL NAMES for compatibility
 
-    /// Original V1 view functions (unchanged names)
+    /// Original V1 view functions
     public fun get_remaining_stock(lootbox: &LootboxConfig, rarity: u8): u64 {
         if (rarity == RARITY_COMMON) {
             vector::length(&lootbox.common_config.available_ids)

@@ -5,7 +5,6 @@ module lootbox_nft::pool {
     use sui::sui::SUI;
     use sui::balance::{Self, Balance};
     use sui::transfer;
-    use sui::vec_map::{Self, VecMap};
     use std::string::{String};
     use lootbox_nft::nft::{Self, LootboxNFT};
 

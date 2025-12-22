@@ -1,7 +1,15 @@
 import React from 'react';
 import { theme } from '../../config/theme';
 
-export const Button = ({ children, variant = 'primary', size = 'md', onClick, className = '' }) => {
+export const Button = ({ 
+  children, 
+  variant = 'primary', 
+  size = 'md', 
+  onClick, 
+  className = '',
+  disabled = false,
+  ...props 
+}) => {
   const variants = {
     primary: `bg-gradient-to-r ${theme.colors.primary.from} ${theme.colors.primary.to} text-white hover:shadow-lg`,
     secondary: `${theme.colors.primary.bg} ${theme.colors.primary.text} ${theme.colors.primary.hover}`,
@@ -14,10 +22,14 @@ export const Button = ({ children, variant = 'primary', size = 'md', onClick, cl
     lg: 'px-8 py-3'
   };
 
+  const disabledStyles = disabled ? 'opacity-50 cursor-not-allowed hover:shadow-none' : '';
+
   return (
     <button 
-      onClick={onClick}
-      className={`${variants[variant]} ${sizes[size]} rounded-lg font-medium transition-all ${className}`}
+      onClick={disabled ? undefined : onClick}
+      disabled={disabled}
+      className={`${variants[variant]} ${sizes[size]} ${disabledStyles} rounded-lg font-medium transition-all ${className}`}
+      {...props}
     >
       {children}
     </button>

@@ -1,8 +1,10 @@
 module lootbox_nft::nft {
     use sui::object::{Self, UID};
-    use sui::tx_context::{TxContext};
-    use std::string::{String};
+    use sui::tx_context::{Self, TxContext};
+    use std::string::{Self, String};
     use sui::transfer;
+    use sui::package;
+    use sui::display;
 
     /// Rarity tiers
     const RARITY_COMMON: u8 = 0;
@@ -11,6 +13,9 @@ module lootbox_nft::nft {
     const RARITY_SUPER_SUPER_RARE: u8 = 3;
     const RARITY_ULTRA_RARE: u8 = 4;
     const RARITY_LEGEND_RARE: u8 = 5;
+
+    /// One-Time-Witness for the module
+    public struct NFT has drop {}
 
     /// The main NFT struct
     public struct LootboxNFT has key, store {
@@ -21,6 +26,37 @@ module lootbox_nft::nft {
         sequential_id: u64,        // 1-500 unique per NFT type
         lootbox_source: String,    // "Bronze", "Silver", "Gold"
         image_url: String,         // IPFS or HTTP URL
+    }
+
+    /// Initialize function - creates Publisher and Display
+    fun init(otw: NFT, ctx: &mut TxContext) {
+        let publisher = package::claim(otw, ctx);
+        
+        // Create Display object immediately
+        let keys = vector[
+            std::string::utf8(b"name"),
+            std::string::utf8(b"description"),
+            std::string::utf8(b"image_url"),
+            std::string::utf8(b"project_url"),
+            std::string::utf8(b"creator"),
+        ];
+
+        let values = vector[
+            std::string::utf8(b"{name} #{sequential_id}"),
+            std::string::utf8(b"A {lootbox_source} lootbox NFT with rarity tier {rarity}. Base value: {base_value} MIST"),
+            std::string::utf8(b"{image_url}"),
+            std::string::utf8(b"https://your-lootbox-project.com"),
+            std::string::utf8(b"Lootbox NFT Collection"),
+        ];
+
+        let mut display = display::new_with_fields<LootboxNFT>(
+            &publisher, keys, values, ctx
+        );
+        display::update_version(&mut display);
+        
+        // Transfer both Publisher and Display to sender
+        transfer::public_transfer(publisher, tx_context::sender(ctx));
+        transfer::public_transfer(display, tx_context::sender(ctx));
     }
 
     /// Create a new NFT (called by lootbox module)

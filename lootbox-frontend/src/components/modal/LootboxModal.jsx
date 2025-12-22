@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
+import { RARITY, RARITY_NAMES } from '../../config/contracts';
 
 export const LootboxModal = ({ isOpen, onClose, lootboxData, onOpenLootbox }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -20,15 +21,23 @@ export const LootboxModal = ({ isOpen, onClose, lootboxData, onOpenLootbox }) =>
 
   if (!isOpen || !lootboxData) return null;
 
-  const { type, price, stock, maxStock, gradient, borderColor } = lootboxData;
+  const { type, price, stock, maxStock, gradient, borderColor, stocks } = lootboxData;
 
-  const rarityData = [
-    { name: 'Common NFT', percentage: '50%', stocks: '498/500 Stocks' },
-    { name: 'Rare', percentage: '25%', stocks: '125/500 Stocks' },
-    { name: 'Super Rare', percentage: '15%', stocks: '75/500 Stocks' },
-    { name: 'Super Super Rare', percentage: '7%', stocks: '35/500 Stocks' },
-    { name: 'Ultra Rare', percentage: '2.5%', stocks: '12/500 Stocks' },
-    { name: 'Legend Rare', percentage: '0.5%', stocks: '2/500 Stocks' },
+  // Real rarity data from blockchain
+  const rarityData = stocks ? [
+    { name: RARITY_NAMES[RARITY.COMMON], percentage: '40%', stocks: `${stocks[RARITY.COMMON]}/500 Stocks` },
+    { name: RARITY_NAMES[RARITY.RARE], percentage: '30%', stocks: `${stocks[RARITY.RARE]}/500 Stocks` },
+    { name: RARITY_NAMES[RARITY.SUPER_RARE], percentage: '15%', stocks: `${stocks[RARITY.SUPER_RARE]}/500 Stocks` },
+    { name: RARITY_NAMES[RARITY.SUPER_SUPER_RARE], percentage: '9%', stocks: `${stocks[RARITY.SUPER_SUPER_RARE]}/500 Stocks` },
+    { name: RARITY_NAMES[RARITY.ULTRA_RARE], percentage: '5%', stocks: `${stocks[RARITY.ULTRA_RARE]}/500 Stocks` },
+    { name: RARITY_NAMES[RARITY.LEGEND_RARE], percentage: '1%', stocks: `${stocks[RARITY.LEGEND_RARE]}/500 Stocks` },
+  ] : [
+    { name: 'Common', percentage: '40%', stocks: 'Loading...' },
+    { name: 'Rare', percentage: '30%', stocks: 'Loading...' },
+    { name: 'Super Rare', percentage: '15%', stocks: 'Loading...' },
+    { name: 'Super Super Rare', percentage: '9%', stocks: 'Loading...' },
+    { name: 'Ultra Rare', percentage: '5%', stocks: 'Loading...' },
+    { name: 'Legend Rare', percentage: '1%', stocks: 'Loading...' },
   ];
 
   const nextImage = () => {
@@ -122,13 +131,17 @@ export const LootboxModal = ({ isOpen, onClose, lootboxData, onOpenLootbox }) =>
             <div className="space-y-6">
               {/* Current Stocks */}
               <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
-                <h3 className="font-semibold text-gray-800 mb-3">Current Stocks</h3>
+                <h3 className="font-semibold text-gray-800 mb-3">Current Stocks (Live from Blockchain)</h3>
                 <div className="space-y-2">
                   {rarityData.map((rarity, index) => (
                     <div key={index} className="flex justify-between items-center text-sm">
                       <span className="text-gray-700 flex-1">{rarity.name}</span>
                       <span className="text-gray-600 font-medium mx-4">{rarity.percentage}</span>
-                      <span className="text-gray-600 font-medium">{rarity.stocks}</span>
+                      <span className={`font-medium ${
+                        stocks && stocks[index] === 0 ? 'text-red-600' : 'text-gray-600'
+                      }`}>
+                        {rarity.stocks}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -175,7 +188,7 @@ export const LootboxModal = ({ isOpen, onClose, lootboxData, onOpenLootbox }) =>
 
               {/* Info Text */}
               <p className="text-xs text-center text-gray-500">
-                Each lootbox guarantees one NFT. Odds are transparent and verifiable on-chain.
+                Each lootbox guarantees one NFT. Odds are transparent and verifiable on-chain using Sui's provably fair randomness.
               </p>
             </div>
           </div>
